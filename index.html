@@ -10,6 +10,7 @@ let students = [
 "范梓雯","姚迪瀚","李嘉雯","许墨墨"
 ];
 
+// 🚫 不参与抽取
 let blacklist = ["许墨墨","蔡静奕","乔欣蓉","尹雨佳","潮静语","田馨儿"];
 
 let activeStudents = students.filter(name => !blacklist.includes(name));
