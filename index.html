@@ -1,7 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>🎯 点名系统</title>
+<style>
+body { text-align:center; font-family:Arial; background:#f5f7fa; }
+h1 { margin-top:30px; }
+#name { font-size:50px; margin:40px; color:#007bff; font-weight:bold; }
+button { font-size:20px; margin:10px; padding:10px 25px; border-radius:10px; cursor:pointer; }
+#stats { margin-top:20px; font-size:14px; }
+</style>
+</head>
+
+<body>
+
+<h1>🎯 课堂点名系统</h1>
+
+<div id="name">准备开始</div>
+
+<button onclick="start()">开始</button>
+<button onclick="stop()">停止</button>
+
+<h3>📊 点名统计</h3>
+<div id="stats"></div>
+
 <script>
 
-// 👇 名单
-let students = [
+// 👇 全名单（已整理）
+const students = [
 "吴翰宸","李锦康","童子虞","黄陈宇轩","季旭洋","孙羽浩","岑毅杰","肖訾轩",
 "马关心","乔欣蓉","田馨儿","蔡静奕","曹天虹","王嘉木","丁昊宇","郑钰婷",
 "施维","李天佑","陈枫元","蒋孜祺","陈思瑶","黄晨轩","刘大为","王茗扬",
@@ -10,55 +36,64 @@ let students = [
 "范梓雯","姚迪瀚","李嘉雯","许墨墨"
 ];
 
-// 🚫 不参与抽取
-let blacklist = ["许墨墨","蔡静奕","乔欣蓉","尹雨佳","潮静语","田馨儿"];
+// 🚫 永远抽不到
+const blacklist = ["许墨墨","蔡静奕","乔欣蓉","尹雨佳","潮静语","田馨儿"];
 
-let activeStudents = students.filter(name => !blacklist.includes(name));
+// ✅ 可抽名单
+const pool = students.filter(n => !blacklist.includes(n));
 
+// 📊 统计
 let count = {};
-let current = "";
+students.forEach(n => count[n] = 0);
+
+// ⏱ 状态
 let timer = null;
+let current = "";
 
-students.forEach(name => count[name] = 0);
-
+// ▶️ 开始
 function start() {
-    // 🔥 关键：无论如何先清掉旧的
+    // 🔥 永远先清掉旧的
     if (timer !== null) {
         clearInterval(timer);
-        timer = null;
     }
 
     timer = setInterval(() => {
-        current = activeStudents[Math.floor(Math.random() * activeStudents.length)];
+        current = pool[Math.floor(Math.random() * pool.length)];
         document.getElementById("name").innerText = current;
     }, 50);
 }
 
+// ⏹ 停止
 function stop() {
-    // 🔥 停止所有情况
     if (timer !== null) {
         clearInterval(timer);
         timer = null;
     }
 
-    if (current) {
-        count[current]++;
-        updateStats();
+    if (!current) return;
 
-        let msg = new SpeechSynthesisUtterance(current);
-        speechSynthesis.cancel(); // 🔥 防止语音叠加
-        speechSynthesis.speak(msg);
-    }
+    // 📊 统计
+    count[current]++;
+    updateStats();
+
+    // 🔊 语音（防叠加）
+    speechSynthesis.cancel();
+    let msg = new SpeechSynthesisUtterance(current);
+    speechSynthesis.speak(msg);
 }
 
+// 📊 更新统计
 function updateStats() {
-    let text = "";
+    let html = "";
     for (let s of students) {
-        text += s + "：" + count[s] + "次<br>";
+        html += s + "：" + count[s] + "次<br>";
     }
-    document.getElementById("stats").innerHTML = text;
+    document.getElementById("stats").innerHTML = html;
 }
 
 updateStats();
 
 </script>
+
+</body>
+</html>
