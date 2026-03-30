@@ -1,28 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>🎡 点名系统</title>
-<style>
-body { text-align: center; font-family: Arial; background:#f5f7fa; }
-#name { font-size: 50px; margin: 40px; color: #007bff; font-weight: bold; }
-button { font-size: 20px; margin: 10px; padding: 10px 25px; border-radius:10px; }
-</style>
-</head>
-
-<body>
-
-<h1>🎯 课堂点名系统</h1>
-<div id="name">准备开始</div>
-
-<button onclick="start()">开始</button>
-<button onclick="stop()">停止</button>
-
-<h3>📊 点名统计</h3>
-<div id="stats"></div>
-
 <script>
-
 let students = [
 "吴翰宸","李锦康","童子虞","黄陈宇轩","季旭洋","孙羽浩","岑毅杰","肖訾轩",
 "马关心","乔欣蓉","田馨儿","蔡静奕","曹天虹","王嘉木","丁昊宇","郑钰婷",
@@ -31,18 +7,18 @@ let students = [
 "张誉曈","陈乐文","张志浩","范奕辰","董俊屹","徐墨墨","尹雨佳","龚泓铭",
 "范梓雯","姚迪瀚","李嘉雯","许墨墨"
 ];
-
 let blacklist = ["许墨墨","蔡静奕","乔欣蓉","尹雨佳","潮静语","田馨儿"];
-
 let activeStudents = students.filter(name => !blacklist.includes(name));
-
 let count = {};
 let current = "";
-let timer;
-
+let timer = null;   
+let running = false;
 students.forEach(name => count[name] = 0);
-
 function start() {
+    if (running) return;  
+
+    running = true;
+
     timer = setInterval(() => {
         current = activeStudents[Math.floor(Math.random() * activeStudents.length)];
         document.getElementById("name").innerText = current;
@@ -50,12 +26,19 @@ function start() {
 }
 
 function stop() {
-    clearInterval(timer);
-    count[current]++;
-    updateStats();
+    if (!running) return; 
 
-    let msg = new SpeechSynthesisUtterance(current);
-    speechSynthesis.speak(msg);
+    clearInterval(timer);
+    timer = null;
+    running = false;
+
+    if (current) {
+        count[current]++;
+        updateStats();
+
+        let msg = new SpeechSynthesisUtterance(current);
+        speechSynthesis.speak(msg);
+    }
 }
 
 function updateStats() {
@@ -69,6 +52,3 @@ function updateStats() {
 updateStats();
 
 </script>
-
-</body>
-</html>
