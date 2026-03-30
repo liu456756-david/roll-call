@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>🎡 点名系统</title>
 <style>
-body { text-align: center; font-family: Arial; }
-#name { font-size: 40px; margin: 30px; color: blue; }
-button { font-size: 20px; margin: 10px; padding: 10px 20px; }
+body { text-align: center; font-family: Arial; background:#f5f7fa; }
+#name { font-size: 50px; margin: 40px; color: #007bff; font-weight: bold; }
+button { font-size: 20px; margin: 10px; padding: 10px 25px; border-radius:10px; }
 </style>
 </head>
 
@@ -22,37 +22,38 @@ button { font-size: 20px; margin: 10px; padding: 10px 20px; }
 <div id="stats"></div>
 
 <script>
+
 let students = [
-"孙羽浩","李锦康","童子虞","黄陈宇轩","季旭洋","吴翰宸","岑毅杰","肖訾轩",
+"吴翰宸","李锦康","童子虞","黄陈宇轩","季旭洋","孙羽浩","岑毅杰","肖訾轩",
 "马关心","乔欣蓉","田馨儿","蔡静奕","曹天虹","王嘉木","丁昊宇","郑钰婷",
 "施维","李天佑","陈枫元","蒋孜祺","陈思瑶","黄晨轩","刘大为","王茗扬",
 "陈甜柔","顾子浩","赵紫馨","张宥达","杨博宇","宋佳宁","潮静语","陆君昊",
 "张誉曈","陈乐文","张志浩","范奕辰","董俊屹","徐墨墨","尹雨佳","龚泓铭",
-"范梓雯","姚迪瀚"
+"范梓雯","姚迪瀚","李嘉雯","许墨墨"
 ];
 
+let blacklist = ["许墨墨","蔡静奕","乔欣蓉","尹雨佳","潮静语","田馨儿"];
+
+let activeStudents = students.filter(name => !blacklist.includes(name));
+
 let count = {};
-let running = false;
 let current = "";
 let timer;
 
 students.forEach(name => count[name] = 0);
 
 function start() {
-    running = true;
     timer = setInterval(() => {
-        current = students[Math.floor(Math.random() * students.length)];
+        current = activeStudents[Math.floor(Math.random() * activeStudents.length)];
         document.getElementById("name").innerText = current;
     }, 50);
 }
 
 function stop() {
-    running = false;
     clearInterval(timer);
     count[current]++;
     updateStats();
 
-    // 语音播报
     let msg = new SpeechSynthesisUtterance(current);
     speechSynthesis.speak(msg);
 }
@@ -66,6 +67,7 @@ function updateStats() {
 }
 
 updateStats();
+
 </script>
 
 </body>
